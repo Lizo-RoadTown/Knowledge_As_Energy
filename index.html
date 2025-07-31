@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Molecular Interface Structure - Bronco Space Lab</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: radial-gradient(circle at 50% 50%, #0f1419, #1a1f2e);
+            color: white;
+            overflow-x: auto;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(0,0,0,0.3);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            color: #64ffda;
+            margin-bottom: 20px;
+            font-size: 28px;
+            text-shadow: 0 0 10px rgba(100, 255, 218, 0.3);
+        }
+        .subtitle {
+            text-align: center;
+            color: #b0bec5;
+            margin-bottom: 40px;
+            font-style: italic;
+        }
+        
+        .setup-panel {
+            background: rgba(255,255,255,0.05);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(100, 255, 218, 0.2);
+        }
+        
+        .setup-section {
+            margin-bottom: 25px;
+        }
+        
+        .setup-title {
+            color: #64ffda;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-bottom: 2px solid rgba(100, 255, 218, 0.3);
+            padding-bottom: 5px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #64ffda;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgba(100, 255, 218, 0.3);
+            border-radius: 8px;
+            background: rgba(0,0,0,0.3);
+            color: white;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #64ffda;
+            box-shadow: 0 0 15px rgba(100, 255, 218, 0.2);
+        }
+        
+        .team-list, .faculty-list, .project-list, .interface-list {
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .team-item, .faculty-item, .project-item, .interface-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            margin: 5px 0;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+            border-left: 3px solid #64ffda;
+        }
+        
+        .item-info {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-weight: bold;
+            color: #64ffda;
+        }
+        
+        .item-details {
+            font-size: 12px;
+            color: #b0bec5;
+        }
+        
+        .remove-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .remove-btn:hover {
+            background: #e74c3c;
+        }
+        
+        .molecular-structure {
+            position: relative;
+            width: 100%;
+            height: 800px;
+            margin: 20px 0;
+            overflow: visible;
+            background: rgba(255,255,255,0.02);
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: none;
+            min-height: 600px;
+        }
+        
+        .molecule {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid;
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+            user-select: none;
+        }
+        
+        .molecule:hover {
+            transform: scale(1.1);
+            z-index: 100;
+            box-shadow: 0 0 30px rgba(255,255,255,0.2);
+        }
+        
+        .molecule.selected {
+            transform: scale(1.15);
+            box-shadow: 0 0 40px rgba(100, 255, 218, 0.5);
+            border-color: #64ffda !important;
+        }
+        
+        .team-molecule {
+            background: radial-gradient(circle, #4ecdc4, #3498db);
+            border-color: #2980b9;
+            color: white;
+        }
+        
+        .faculty-molecule {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #f39c12, #d35400);
+            border-color: #e67e22;
+            font-size: 11px;
+            box-shadow: 0 0 30px rgba(243, 156, 18, 0.4);
+        }
+        
+        .project-molecule {
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, #9b59b6, #8e44ad);
+            border-color: #7d3c98;
+            font-size: 12px;
+            box-shadow: 0 0 35px rgba(155, 89, 182, 0.4);
+        }
+        
+        .bond {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            height: 2px;
+            transform-origin: left center;
+            z-index: 1;
+            border-radius: 1px;
+            transition: all 0.3s ease;
+        }
+        
+        .strong-bond {
+            background: linear-gradient(90deg, transparent, rgba(39, 174, 96, 0.8), transparent);
+            height: 4px;
+            box-shadow: 0 0 8px rgba(39, 174, 96, 0.4);
+        }
+        
+        .weak-bond {
+            background: linear-gradient(90deg, transparent, rgba(231, 76, 60, 0.8), transparent);
+            height: 2px;
+            box-shadow: 0 0 8px rgba(231, 76, 60, 0.4);
+            animation: flicker 2s infinite;
+        }
+        
+        .moderate-bond {
+            background: linear-gradient(90deg, transparent, rgba(243, 156, 18, 0.8), transparent);
+            height: 3px;
+            box-shadow: 0 0 6px rgba(243, 156, 18, 0.4);
+        }
+        
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        .energy-particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #64ffda;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #64ffda;
+            animation: float 3s infinite ease-in-out;
+            z-index: 2;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(180deg); }
+        }
+        
+        .energy-leak {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ff4757;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #ff4757;
+            animation: leak 1.5s infinite;
+            z-index: 2;
+        }
+        
+        @keyframes leak {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.3) translateY(20px); }
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: 2px solid #64ffda;
+            border-radius: 25px;
+            background: transparent;
+            color: #64ffda;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .btn:hover {
+            background: #64ffda;
+            color: #0f1419;
+            box-shadow: 0 0 20px rgba(100, 255, 218, 0.3);
+        }
+        
+        .btn.active {
+            background: #64ffda;
+            color: #0f1419;
+            box-shadow: 0 0 20px rgba(100, 255, 218, 0.3);
+        }
+        
+        .btn.primary {
+            background: #64ffda;
+            color: #0f1419;
+        }
+        
+        .btn.primary:hover {
+            background: #4ecdc4;
+            box-shadow: 0 0 20px rgba(100, 255, 218, 0.3);
+        }
+        
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .stat-card {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #64ffda;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #64ffda;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #b0bec5;
+            margin-top: 5px;
+        }
+        
+        .info-panel {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(100, 255, 218, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(100, 255, 218, 0.3);
+            display: none;
+            backdrop-filter: blur(5px);
+        }
+        
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .legend-section {
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        
+        .legend-molecules { border-left-color: #64ffda; }
+        .legend-bonds { border-left-color: #f39c12; }
+        .legend-energy { border-left-color: #2ecc71; }
+        
+        .legend-title {
+            font-weight: bold;
+            color: #64ffda;
+            margin-bottom: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0;
+            font-size: 12px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 12px;
+            border-radius: 6px;
+        }
+        
+        .interface-type-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .interface-type {
+            padding: 10px;
+            border: 2px solid rgba(100, 255, 218, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .interface-type:hover {
+            border-color: #64ffda;
+            background: rgba(100, 255, 218, 0.1);
+        }
+        
+        .interface-type.selected {
+            border-color: #64ffda;
+            background: rgba(100, 255, 218, 0.2);
+        }
+        
+        .interface-type-name {
+            font-weight: bold;
+            color: #64ffda;
+            margin-bottom: 5px;
+        }
+        
+        .interface-type-loss {
+            font-size: 12px;
+            color: #ff4757;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bronco Space Lab: Molecular Interface Structure</h1>
+        <p class="subtitle">Nearly Decomposable Architecture | Micro-modules as Molecules | Knowledge as Energy Flow</p>
+        
+        <!-- Setup Panel -->
+        <div class="setup-panel" id="setupPanel">
+            <div class="setup-section">
+                <div class="setup-title">Step 1: Define Your Teams</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="teamName">Team Name:</label>
+                        <input type="text" id="teamName" placeholder="e.g., Electrical Engineering Team">
+                    </div>
+                    <div class="form-group">
+                        <label for="teamSize">Team Size:</label>
+                        <input type="number" id="teamSize" min="1" max="20" value="5">
+                    </div>
+                    <div class="form-group">
+                        <label for="teamDescription">Description:</label>
+                        <textarea id="teamDescription" rows="2" placeholder="Brief description of team's role"></textarea>
+                    </div>
+                </div>
+                <button class="btn" onclick="addTeam()">Add Team</button>
+                <div class="team-list" id="teamList"></div>
+            </div>
+            
+            <div class="setup-section">
+                <div class="setup-title">Step 2: Define Your Faculty/Staff</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="facultyName">Faculty/Staff Name:</label>
+                        <input type="text" id="facultyName" placeholder="e.g., Dr. Smith">
+                    </div>
+                    <div class="form-group">
+                        <label for="facultyRole">Role:</label>
+                        <input type="text" id="facultyRole" placeholder="e.g., Principal Investigator">
+                    </div>
+                    <div class="form-group">
+                        <label for="facultyDescription">Description:</label>
+                        <textarea id="facultyDescription" rows="2" placeholder="Brief description of role"></textarea>
+                    </div>
+                </div>
+                <button class="btn" onclick="addFaculty()">Add Faculty/Staff</button>
+                <div class="faculty-list" id="facultyList"></div>
+            </div>
+            
+            <div class="setup-section">
+                <div class="setup-title">Step 2.5: Define Your Projects</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="projectName">Project Name:</label>
+                        <input type="text" id="projectName" placeholder="e.g., CubeSat Mission Alpha">
+                    </div>
+                    <div class="form-group">
+                        <label for="projectType">Project Type:</label>
+                        <select id="projectType">
+                            <option value="multiversity">Multi-University Collaborative</option>
+                            <option value="jpl-contract">JPL Contract</option>
+                            <option value="contract-pursuit">Contract Pursuit</option>
+                            <option value="research">Research Project</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectDuration">Duration (years):</label>
+                        <input type="number" id="projectDuration" min="1" max="10" value="3">
+                    </div>
+                    <div class="form-group">
+                        <label for="projectDescription">Description:</label>
+                        <textarea id="projectDescription" rows="2" placeholder="Brief description of project"></textarea>
+                    </div>
+                </div>
+                <button class="btn" onclick="addProject()">Add Project</button>
+                <div class="project-list" id="projectList"></div>
+            </div>
+            
+            <div class="setup-section">
+                <div class="setup-title">Step 3: Create Interfaces</div>
+                
+                <div class="form-group">
+                    <label for="interfaceType">Interface Type:</label>
+                    <select id="interfaceType" onchange="updateInterfaceTargets()">
+                        <option value="team-to-team">Team to Team</option>
+                        <option value="team-to-faculty">Team to Faculty/Staff</option>
+                        <option value="team-to-project">Team to Project (Micro-module to Full Project)</option>
+                    </select>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="interfaceFrom">From:</label>
+                        <select id="interfaceFrom"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="interfaceTo">To:</label>
+                        <select id="interfaceTo"></select>
+                    </div>
+                </div>
+                
+                <div class="interface-type-selector">
+                    <div class="interface-type" data-type="strong" data-loss="5">
+                        <div class="interface-type-name">Strong Institutional Bond</div>
+                        <div class="interface-type-loss">5% Energy Loss</div>
+                        <div style="font-size: 11px; color: #b0bec5;">Permanent institutional support, shared resources, formal collaboration agreements</div>
+                    </div>
+                    <div class="interface-type" data-type="moderate" data-loss="15">
+                        <div class="interface-type-name">Moderate Contract Bond</div>
+                        <div class="interface-type-loss">15% Energy Loss</div>
+                        <div style="font-size: 11px; color: #b0bec5;">Grant-funded collaboration, temporary contracts, project-based partnerships</div>
+                    </div>
+                    <div class="interface-type" data-type="weak" data-loss="35">
+                        <div class="interface-type-name">Weak Informal Bond</div>
+                        <div class="interface-type-loss">35% Energy Loss</div>
+                        <div style="font-size: 11px; color: #b0bec5;">Informal communication, ad-hoc collaboration, personal relationships</div>
+                    </div>
+                    <div class="interface-type" data-type="fragile" data-loss="60">
+                        <div class="interface-type-name">Fragile Temporary Bond</div>
+                        <div class="interface-type-loss">60% Energy Loss</div>
+                        <div style="font-size: 11px; color: #b0bec5;">One-time interactions, minimal institutional support, high turnover risk</div>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="addInterface()">Create Interface</button>
+                <div class="interface-list" id="interfaceList"></div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn primary" onclick="generateVisualization()">Generate Molecular Visualization</button>
+                <button class="btn" onclick="generateVisualizationWithSample()" style="margin-left: 10px;">Generate with Sample Data</button>
+            </div>
+        </div>
+        
+        <!-- Visualization Controls -->
+        <div class="controls hidden" id="visualizationControls">
+            <button class="btn" onclick="showBondStrength()">Show Bond Strength</button>
+            <button class="btn" onclick="showEnergyFlow()">Show Energy Flow</button>
+            <button class="btn" onclick="showDecomposition()">Show Decomposition Risk</button>
+            <button class="btn" onclick="simulateEnergyFlow()">Simulate Energy Flow</button>
+            <button class="btn" onclick="resetVisualization()">Reset to Setup</button>
+            <button class="btn" onclick="toggleVisualization()">Toggle Visualization</button>
+            <button class="btn" onclick="forceVisualization()">Force Show Visualization</button>
+        </div>
+        
+        <!-- Statistics Panel -->
+        <div class="stats-panel" id="statsPanel">
+            <div class="stat-card">
+                <div class="stat-value" id="totalMolecules">0</div>
+                <div class="stat-label">Total Molecules</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalBonds">0</div>
+                <div class="stat-label">Active Bonds</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="energyFlow">0%</div>
+                <div class="stat-label">Energy Flow Efficiency</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="decompositionRisk">0%</div>
+                <div class="stat-label">Decomposition Risk</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalEnergyLoss">0%</div>
+                <div class="stat-label">Total Energy Loss</div>
+            </div>
+        </div>
+        
+        <!-- Molecular Structure -->
+        <div class="molecular-structure" id="molecularStructure"></div>
+        
+        <!-- Legend -->
+        <div class="legend" id="legend">
+            <div class="legend-section legend-molecules">
+                <div class="legend-title">Molecules (Micro-modules)</div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #3498db;"></div>
+                    <span>Team Molecules (Blue)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #f39c12;"></div>
+                    <span>Faculty/Staff Hubs (Orange)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #9b59b6;"></div>
+                    <span>Project Molecules (Purple)</span>
+                </div>
+            </div>
+            
+            <div class="legend-section legend-bonds">
+                <div class="legend-title">Molecular Bonds (Interfaces)</div>
+                <div class="legend-item">
+                    <div class="legend-color strong-bond"></div>
+                    <span>Strong Bond - 5% Energy Loss</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color moderate-bond"></div>
+                    <span>Moderate Bond - 15% Energy Loss</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color weak-bond"></div>
+                    <span>Weak Bond - 35% Energy Loss</span>
+                </div>
+            </div>
+            
+            <div class="legend-section legend-energy">
+                <div class="legend-title">Knowledge Energy</div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #64ffda;"></div>
+                    <span>Knowledge Energy Particles (Flowing)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ff4757;"></div>
+                    <span>Energy Leaks (Knowledge Loss)</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-panel" id="infoPanel">
+            <h3 id="infoTitle"></h3>
+            <p id="infoContent"></p>
+        </div>
+    </div>
+
+    <script>
+        let teams = [];
+        let faculty = [];
+        let projects = [];
+        let interfaces = [];
+        let molecules = [];
+        let bonds = [];
+        let energyParticles = [];
+        let energyLeaks = [];
+        let selectedInterfaceType = null;
+
+        // Initialize interface type selection
+        document.addEventListener('DOMContentLoaded', function() {
+            const interfaceTypes = document.querySelectorAll('.interface-type');
+            interfaceTypes.forEach(type => {
+                type.addEventListener('click', function() {
+                    interfaceTypes.forEach(t => t.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedInterfaceType = this.dataset.type;
+                    console.log('Selected interface type:', selectedInterfaceType);
+                });
+            });
+            
+            // Initialize interface targets
+            updateInterfaceTargets();
+            
+            // Add sample data for demonstration
+            addSampleData();
+        });
+
+        function addSampleData() {
+            // Add sample teams
+            teams = [
+                { id: 'team_1', name: 'Electrical Team', size: 5, description: 'Power and avionics systems' },
+                { id: 'team_2', name: 'Software Team', size: 4, description: 'Flight software and data processing' },
+                { id: 'team_3', name: 'Mission Ops', size: 3, description: 'Ground systems and operations' }
+            ];
+            
+            // Add sample faculty
+            faculty = [
+                { id: 'faculty_1', name: 'Dr. Smith', role: 'Principal Investigator', description: 'Project oversight and coordination' },
+                { id: 'faculty_2', name: 'Dr. Johnson', role: 'Technical Lead', description: 'Technical guidance and mentoring' }
+            ];
+            
+            // Add sample projects
+            projects = [
+                { id: 'project_1', name: 'CubeSat Alpha', type: 'jpl-contract', duration: 3, description: 'Primary satellite mission' },
+                { id: 'project_2', name: 'Research Beta', type: 'multiversity', duration: 2, description: 'Multi-university collaboration' }
+            ];
+            
+            // Add sample interfaces
+            interfaces = [
+                { id: 'interface_1', from: 'team_1', to: 'faculty_1', interfaceType: 'team-to-faculty', bondType: 'strong', energyLoss: 5 },
+                { id: 'interface_2', from: 'team_2', to: 'faculty_2', interfaceType: 'team-to-faculty', bondType: 'moderate', energyLoss: 15 },
+                { id: 'interface_3', from: 'team_1', to: 'team_2', interfaceType: 'team-to-team', bondType: 'weak', energyLoss: 35 },
+                { id: 'interface_4', from: 'team_3', to: 'project_1', interfaceType: 'team-to-project', bondType: 'strong', energyLoss: 5 }
+            ];
+            
+            // Update displays
+            updateTeamList();
+            updateFacultyList();
+            updateProjectList();
+            updateInterfaceList();
+            updateInterfaceTargets();
+        }
+
+        function addTeam() {
+            const name = document.getElementById('teamName').value.trim();
+            const size = parseInt(document.getElementById('teamSize').value);
+            const description = document.getElementById('teamDescription').value.trim();
+            
+            if (!name) {
+                alert('Please enter a team name');
+                return;
+            }
+            
+            const team = {
+                id: 'team_' + Date.now(),
+                name: name,
+                size: size,
+                description: description
+            };
+            
+            teams.push(team);
+            updateTeamList();
+            updateInterfaceSelects();
+            
+            // Clear form
+            document.getElementById('teamName').value = '';
+            document.getElementById('teamSize').value = '5';
+            document.getElementById('teamDescription').value = '';
+        }
+
+        function addFaculty() {
+            const name = document.getElementById('facultyName').value.trim();
+            const role = document.getElementById('facultyRole').value.trim();
+            const description = document.getElementById('facultyDescription').value.trim();
+            
+            if (!name) {
+                alert('Please enter a faculty/staff name');
+                return;
+            }
+            
+            const facultyMember = {
+                id: 'faculty_' + Date.now(),
+                name: name,
+                role: role,
+                description: description
+            };
+            
+            faculty.push(facultyMember);
+            updateFacultyList();
+            updateInterfaceTargets();
+            
+            // Clear form
+            document.getElementById('facultyName').value = '';
+            document.getElementById('facultyRole').value = '';
+            document.getElementById('facultyDescription').value = '';
+        }
+
+        function addProject() {
+            const name = document.getElementById('projectName').value.trim();
+            const type = document.getElementById('projectType').value;
+            const duration = parseInt(document.getElementById('projectDuration').value);
+            const description = document.getElementById('projectDescription').value.trim();
+            
+            if (!name) {
+                alert('Please enter a project name');
+                return;
+            }
+            
+            const project = {
+                id: 'project_' + Date.now(),
+                name: name,
+                type: type,
+                duration: duration,
+                description: description
+            };
+            
+            projects.push(project);
+            updateProjectList();
+            updateInterfaceTargets();
+            
+            // Clear form
+            document.getElementById('projectName').value = '';
+            document.getElementById('projectType').value = 'multiversity';
+            document.getElementById('projectDuration').value = '3';
+            document.getElementById('projectDescription').value = '';
+        }
+
+        function addInterface() {
+            const interfaceType = document.getElementById('interfaceType').value;
+            const fromSource = document.getElementById('interfaceFrom').value;
+            const toTarget = document.getElementById('interfaceTo').value;
+            
+            if (!fromSource || !toTarget) {
+                alert('Please select both source and target');
+                return;
+            }
+            
+            if (fromSource === toTarget) {
+                alert('Cannot create interface to the same entity');
+                return;
+            }
+            
+            if (!selectedInterfaceType) {
+                alert('Please select an interface strength type (click on one of the bond types below)');
+                return;
+            }
+            
+            // Check if interface already exists
+            const existingInterface = interfaces.find(i => 
+                (i.from === fromSource && i.to === toTarget) || 
+                (i.from === toTarget && i.to === fromSource)
+            );
+            
+            if (existingInterface) {
+                alert('Interface already exists between these entities');
+                return;
+            }
+            
+            const interfaceData = {
+                id: 'interface_' + Date.now(),
+                from: fromSource,
+                to: toTarget,
+                interfaceType: interfaceType,
+                bondType: selectedInterfaceType,
+                energyLoss: parseInt(document.querySelector(`[data-type="${selectedInterfaceType}"]`).dataset.loss)
+            };
+            
+            interfaces.push(interfaceData);
+            updateInterfaceList();
+            
+            // Clear selection
+            document.getElementById('interfaceFrom').value = '';
+            document.getElementById('interfaceTo').value = '';
+            document.querySelectorAll('.interface-type').forEach(t => t.classList.remove('selected'));
+            selectedInterfaceType = null;
+            
+            console.log('Interface added:', interfaceData);
+            console.log('Total interfaces:', interfaces.length);
+        }
+
+        function updateTeamList() {
+            const teamList = document.getElementById('teamList');
+            teamList.innerHTML = '';
+            
+            teams.forEach(team => {
+                const teamItem = document.createElement('div');
+                teamItem.className = 'team-item';
+                teamItem.innerHTML = `
+                    <div class="item-info">
+                        <div class="item-name">${team.name}</div>
+                        <div class="item-details">Size: ${team.size} | ${team.description}</div>
+                    </div>
+                    <button class="remove-btn" onclick="removeTeam('${team.id}')">Remove</button>
+                `;
+                teamList.appendChild(teamItem);
+            });
+        }
+
+        function updateFacultyList() {
+            const facultyList = document.getElementById('facultyList');
+            facultyList.innerHTML = '';
+            
+            faculty.forEach(facultyMember => {
+                const facultyItem = document.createElement('div');
+                facultyItem.className = 'faculty-item';
+                facultyItem.innerHTML = `
+                    <div class="item-info">
+                        <div class="item-name">${facultyMember.name}</div>
+                        <div class="item-details">${facultyMember.role} | ${facultyMember.description}</div>
+                    </div>
+                    <button class="remove-btn" onclick="removeFaculty('${facultyMember.id}')">Remove</button>
+                `;
+                facultyList.appendChild(facultyItem);
+            });
+        }
+
+        function updateProjectList() {
+            const projectList = document.getElementById('projectList');
+            projectList.innerHTML = '';
+            
+            projects.forEach(project => {
+                const projectItem = document.createElement('div');
+                projectItem.className = 'project-item';
+                projectItem.innerHTML = `
+                    <div class="item-info">
+                        <div class="item-name">${project.name}</div>
+                        <div class="item-details">${project.type} | ${project.duration} years | ${project.description}</div>
+                    </div>
+                    <button class="remove-btn" onclick="removeProject('${project.id}')">Remove</button>
+                `;
+                projectList.appendChild(projectItem);
+            });
+        }
+
+        function updateInterfaceTargets() {
+            const interfaceType = document.getElementById('interfaceType').value;
+            const fromSelect = document.getElementById('interfaceFrom');
+            const toSelect = document.getElementById('interfaceTo');
+            
+            fromSelect.innerHTML = '<option value="">Select Source</option>';
+            toSelect.innerHTML = '<option value="">Select Target</option>';
+            
+            if (interfaceType === 'team-to-team') {
+                teams.forEach(team => {
+                    fromSelect.innerHTML += `<option value="${team.id}">${team.name}</option>`;
+                    toSelect.innerHTML += `<option value="${team.id}">${team.name}</option>`;
+                });
+            } else if (interfaceType === 'team-to-faculty') {
+                teams.forEach(team => {
+                    fromSelect.innerHTML += `<option value="${team.id}">${team.name}</option>`;
+                });
+                faculty.forEach(facultyMember => {
+                    toSelect.innerHTML += `<option value="${facultyMember.id}">${facultyMember.name}</option>`;
+                });
+            } else if (interfaceType === 'team-to-project') {
+                teams.forEach(team => {
+                    fromSelect.innerHTML += `<option value="${team.id}">${team.name}</option>`;
+                });
+                projects.forEach(project => {
+                    toSelect.innerHTML += `<option value="${project.id}">${project.name}</option>`;
+                });
+            }
+        }
+
+        function updateInterfaceList() {
+            const interfaceList = document.getElementById('interfaceList');
+            interfaceList.innerHTML = '';
+            
+            interfaces.forEach(interfaceData => {
+                const fromEntity = teams.find(t => t.id === interfaceData.from) || 
+                                  faculty.find(f => f.id === interfaceData.from);
+                const toEntity = teams.find(t => t.id === interfaceData.to) || 
+                                faculty.find(f => f.id === interfaceData.to) ||
+                                projects.find(p => p.id === interfaceData.to);
+                
+                const interfaceItem = document.createElement('div');
+                interfaceItem.className = 'interface-item';
+                interfaceItem.innerHTML = `
+                    <div class="item-info">
+                        <div class="item-name">${fromEntity ? fromEntity.name : 'Unknown'} ↔ ${toEntity ? toEntity.name : 'Unknown'}</div>
+                        <div class="item-details">${interfaceData.interfaceType} | ${interfaceData.bondType} | Energy Loss: ${interfaceData.energyLoss}%</div>
+                    </div>
+                    <button class="remove-btn" onclick="removeInterface('${interfaceData.id}')">Remove</button>
+                `;
+                interfaceList.appendChild(interfaceItem);
+            });
+        }
+
+        function updateInterfaceSelects() {
+            const fromSelect = document.getElementById('interfaceFrom');
+            const toSelect = document.getElementById('interfaceTo');
+            
+            fromSelect.innerHTML = '<option value="">Select Team</option>';
+            toSelect.innerHTML = '<option value="">Select Team</option>';
+            
+            teams.forEach(team => {
+                fromSelect.innerHTML += `<option value="${team.id}">${team.name}</option>`;
+                toSelect.innerHTML += `<option value="${team.id}">${team.name}</option>`;
+            });
+        }
+
+        function removeTeam(teamId) {
+            teams = teams.filter(t => t.id !== teamId);
+            interfaces = interfaces.filter(i => i.from !== teamId && i.to !== teamId);
+            updateTeamList();
+            updateInterfaceList();
+            updateInterfaceSelects();
+        }
+
+        function removeFaculty(facultyId) {
+            faculty = faculty.filter(f => f.id !== facultyId);
+            interfaces = interfaces.filter(i => i.to !== facultyId);
+            updateFacultyList();
+            updateInterfaceList();
+            updateInterfaceTargets();
+        }
+
+        function removeProject(projectId) {
+            projects = projects.filter(p => p.id !== projectId);
+            interfaces = interfaces.filter(i => i.to !== projectId);
+            updateProjectList();
+            updateInterfaceList();
+            updateInterfaceTargets();
+        }
+
+        function removeInterface(interfaceId) {
+            interfaces = interfaces.filter(i => i.id !== interfaceId);
+            updateInterfaceList();
+        }
+
+        function generateVisualization() {
+            if (teams.length === 0) {
+                alert('Please add at least one team');
+                return;
+            }
+            
+            // Hide setup panel and show visualization
+            document.getElementById('setupPanel').classList.add('hidden');
+            document.getElementById('visualizationControls').classList.remove('hidden');
+            document.getElementById('statsPanel').classList.remove('hidden');
+            document.getElementById('legend').classList.remove('hidden');
+            document.getElementById('molecularStructure').classList.remove('hidden');
+            
+            createMolecules();
+            createBonds();
+            updateStats();
+            
+            // Show initial visualization
+            simulateEnergyFlow();
+        }
+
+        function generateVisualizationWithSample() {
+            // Hide setup panel and show visualization
+            document.getElementById('setupPanel').classList.add('hidden');
+            document.getElementById('visualizationControls').classList.remove('hidden');
+            document.getElementById('statsPanel').classList.remove('hidden');
+            document.getElementById('legend').classList.remove('hidden');
+            document.getElementById('molecularStructure').classList.remove('hidden');
+            
+            createMolecules();
+            createBonds();
+            updateStats();
+            
+            // Show initial visualization
+            simulateEnergyFlow();
+        }
+
+        function createMolecules() {
+            const structure = document.getElementById('molecularStructure');
+            structure.innerHTML = '';
+            molecules = [];
+            
+            // Calculate positions within the visible area
+            const centerX = 400;
+            const centerY = 300;
+            const radius = 150;
+            
+            console.log('Creating molecules for', teams.length, 'teams,', faculty.length, 'faculty,', projects.length, 'projects');
+            
+            // Position teams in a circle
+            teams.forEach((team, index) => {
+                const angle = (index / teams.length) * 2 * Math.PI;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                
+                const molecule = document.createElement('div');
+                molecule.className = 'molecule team-molecule';
+                molecule.dataset.id = team.id;
+                molecule.style.left = x + 'px';
+                molecule.style.top = y + 'px';
+                molecule.innerHTML = team.name.replace(' ', '<br>');
+                
+                molecule.addEventListener('click', () => showMoleculeInfo(team));
+                
+                structure.appendChild(molecule);
+                molecules.push({...team, element: molecule, x, y});
+                console.log('Created team molecule:', team.name, 'at', x, y);
+            });
+            
+            // Position faculty in the center
+            faculty.forEach((facultyMember, index) => {
+                const x = centerX + (index - faculty.length/2) * 100;
+                const y = centerY - 50;
+                
+                const molecule = document.createElement('div');
+                molecule.className = 'molecule faculty-molecule';
+                molecule.dataset.id = facultyMember.id;
+                molecule.style.left = x + 'px';
+                molecule.style.top = y + 'px';
+                molecule.innerHTML = facultyMember.name.replace(' ', '<br>');
+                
+                molecule.addEventListener('click', () => showMoleculeInfo(facultyMember));
+                
+                structure.appendChild(molecule);
+                molecules.push({...facultyMember, element: molecule, x, y});
+                console.log('Created faculty molecule:', facultyMember.name, 'at', x, y);
+            });
+            
+            // Position projects at the bottom
+            projects.forEach((project, index) => {
+                const x = centerX + (index - projects.length/2) * 120;
+                const y = centerY + 150;
+                
+                const molecule = document.createElement('div');
+                molecule.className = 'molecule project-molecule';
+                molecule.dataset.id = project.id;
+                molecule.style.left = x + 'px';
+                molecule.style.top = y + 'px';
+                molecule.innerHTML = project.name.replace(' ', '<br>');
+                
+                molecule.addEventListener('click', () => showMoleculeInfo(project));
+                
+                structure.appendChild(molecule);
+                molecules.push({...project, element: molecule, x, y});
+                console.log('Created project molecule:', project.name, 'at', x, y);
+            });
+            
+            console.log('Total molecules created:', molecules.length);
+        }
+
+        function createBonds() {
+            bonds = [];
+            
+            console.log('Creating bonds for', interfaces.length, 'interfaces');
+            
+            interfaces.forEach(interfaceData => {
+                const fromMolecule = molecules.find(m => m.id === interfaceData.from);
+                const toMolecule = molecules.find(m => m.id === interfaceData.to);
+                
+                if (fromMolecule && toMolecule) {
+                    // Calculate center points of molecules
+                    const fromX = fromMolecule.x + (fromMolecule.element.offsetWidth / 2);
+                    const fromY = fromMolecule.y + (fromMolecule.element.offsetHeight / 2);
+                    const toX = toMolecule.x + (toMolecule.element.offsetWidth / 2);
+                    const toY = toMolecule.y + (toMolecule.element.offsetHeight / 2);
+                    
+                    drawBond(fromX, fromY, toX, toY, interfaceData.bondType, interfaceData.energyLoss);
+                    console.log('Created bond from', fromMolecule.name || fromMolecule.id, 'to', toMolecule.name || toMolecule.id);
+                } else {
+                    console.log('Could not find molecules for interface:', interfaceData);
+                }
+            });
+            
+            console.log('Total bonds created:', bonds.length);
+        }
+
+        function drawBond(x1, y1, x2, y2, type, energyLoss) {
+            const bond = document.createElement('div');
+            bond.className = `bond ${type}-bond`;
+            
+            const length = Math.sqrt((x2-x1)**2 + (y2-y1)**2);
+            const angle = Math.atan2(y2-y1, x2-x1) * 180 / Math.PI;
+            
+            bond.style.left = x1 + 'px';
+            bond.style.top = y1 + 'px';
+            bond.style.width = length + 'px';
+            bond.style.transform = `rotate(${angle}deg)`;
+            
+            bonds.push({x1, y1, x2, y2, type, energyLoss, element: bond});
+            document.getElementById('molecularStructure').appendChild(bond);
+            
+            console.log('Drew bond:', type, 'from', x1, y1, 'to', x2, y2, 'length:', length, 'angle:', angle);
+        }
+
+        function simulateEnergyFlow() {
+            // Clear existing particles
+            document.querySelectorAll('.energy-particle, .energy-leak').forEach(particle => particle.remove());
+            energyParticles = [];
+            energyLeaks = [];
+            
+            // Create energy particles for each bond
+            bonds.forEach(bond => {
+                createEnergyParticle(bond);
+                
+                // Create energy leaks based on bond strength
+                if (bond.energyLoss > 10) {
+                    createEnergyLeak(bond.x1 + (bond.x2 - bond.x1) / 2, bond.y1 + (bond.y2 - bond.y1) / 2, bond.energyLoss);
+                }
+            });
+            
+            updateStats();
+        }
+
+        function createEnergyParticle(bond) {
+            const particle = document.createElement('div');
+            particle.className = 'energy-particle';
+            
+            // Position particle along the bond
+            const progress = Math.random();
+            const x = bond.x1 + (bond.x2 - bond.x1) * progress;
+            const y = bond.y1 + (bond.y2 - bond.y1) * progress;
+            
+            particle.style.left = x + 'px';
+            particle.style.top = y + 'px';
+            particle.style.animationDelay = Math.random() * 3 + 's';
+            
+            energyParticles.push(particle);
+            document.getElementById('molecularStructure').appendChild(particle);
+        }
+
+        function createEnergyLeak(x, y, energyLoss) {
+            const leakCount = Math.floor(energyLoss / 10); // More leaks for higher energy loss
+            
+            for (let i = 0; i < leakCount; i++) {
+                const leak = document.createElement('div');
+                leak.className = 'energy-leak';
+                leak.style.left = (x + Math.random() * 40 - 20) + 'px';
+                leak.style.top = (y + Math.random() * 40 - 20) + 'px';
+                leak.style.animationDelay = Math.random() * 2 + 's';
+                
+                energyLeaks.push(leak);
+                document.getElementById('molecularStructure').appendChild(leak);
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('totalMolecules').textContent = molecules.length;
+            document.getElementById('totalBonds').textContent = bonds.length;
+            
+            // Calculate energy flow efficiency (based on strong bonds vs total bonds)
+            const strongBonds = bonds.filter(bond => bond.type === 'strong').length;
+            const efficiency = bonds.length > 0 ? Math.round((strongBonds / bonds.length) * 100) : 0;
+            document.getElementById('energyFlow').textContent = efficiency + '%';
+            
+            // Calculate decomposition risk (based on weak bonds)
+            const weakBonds = bonds.filter(bond => bond.type === 'weak' || bond.type === 'fragile').length;
+            const risk = bonds.length > 0 ? Math.round((weakBonds / bonds.length) * 100) : 0;
+            document.getElementById('decompositionRisk').textContent = risk + '%';
+            
+            // Calculate total energy loss
+            const totalLoss = bonds.reduce((sum, bond) => sum + bond.energyLoss, 0);
+            const avgLoss = bonds.length > 0 ? Math.round(totalLoss / bonds.length) : 0;
+            document.getElementById('totalEnergyLoss').textContent = avgLoss + '%';
+        }
+
+        function showMoleculeInfo(molecule) {
+            const panel = document.getElementById('infoPanel');
+            const title = document.getElementById('infoTitle');
+            const content = document.getElementById('infoContent');
+            
+            if (molecule.role) {
+                // Faculty member
+                title.textContent = `Faculty/Staff: ${molecule.name}`;
+                content.textContent = `Role: ${molecule.role}\n\n${molecule.description}`;
+            } else if (molecule.type) {
+                // Project
+                title.textContent = `Project: ${molecule.name}`;
+                content.textContent = `Type: ${molecule.type}\nDuration: ${molecule.duration} years\n\n${molecule.description}`;
+            } else {
+                // Team
+                title.textContent = `Team: ${molecule.name}`;
+                content.textContent = `Team Size: ${molecule.size}\n\n${molecule.description}`;
+            }
+            
+            panel.style.display = 'block';
+        }
+
+        function showBondStrength() {
+            const strongBonds = bonds.filter(bond => bond.type === 'strong').length;
+            const moderateBonds = bonds.filter(bond => bond.type === 'moderate').length;
+            const weakBonds = bonds.filter(bond => bond.type === 'weak').length;
+            const fragileBonds = bonds.filter(bond => bond.type === 'fragile').length;
+            
+            alert(`Bond Strength Analysis:\n\nStrong Bonds: ${strongBonds} (5% energy loss)\nModerate Bonds: ${moderateBonds} (15% energy loss)\nWeak Bonds: ${weakBonds} (35% energy loss)\nFragile Bonds: ${fragileBonds} (60% energy loss)\n\nStronger bonds maintain better knowledge flow with lower energy loss.`);
+        }
+
+        function showEnergyFlow() {
+            const totalLoss = bonds.reduce((sum, bond) => sum + bond.energyLoss, 0);
+            const avgLoss = bonds.length > 0 ? Math.round(totalLoss / bonds.length) : 0;
+            
+            alert(`Energy Flow Analysis:\n\nAverage Energy Loss: ${avgLoss}%\nTotal Bonds: ${bonds.length}\n\nKnowledge energy flows through bonds but is lost based on interface strength. Stronger bonds (green) maintain better flow, while weaker bonds (red) cause significant energy leaks.`);
+        }
+
+        function showDecomposition() {
+            const weakBonds = bonds.filter(bond => bond.type === 'weak' || bond.type === 'fragile').length;
+            const risk = bonds.length > 0 ? Math.round((weakBonds / bonds.length) * 100) : 0;
+            
+            alert(`Decomposition Risk Analysis:\n\nCurrent Risk Level: ${risk}%\nWeak/Fragile Bonds: ${weakBonds}\n\nRed particles show energy leaks where molecular bonds are breaking down. These are critical points where institutional knowledge is lost. Consider strengthening these interfaces through institutional support or additional funding.`);
+        }
+
+        function resetVisualization() {
+            // Show setup panel and hide visualization
+            document.getElementById('setupPanel').classList.remove('hidden');
+            document.getElementById('visualizationControls').classList.add('hidden');
+            document.getElementById('statsPanel').classList.add('hidden');
+            document.getElementById('legend').classList.add('hidden');
+            document.getElementById('molecularStructure').classList.add('hidden');
+            document.getElementById('infoPanel').style.display = 'none';
+            
+            // Clear data
+            teams = [];
+            faculty = [];
+            projects = [];
+            interfaces = [];
+            molecules = [];
+            bonds = [];
+            energyParticles = [];
+            energyLeaks = [];
+            
+            // Update displays
+            updateTeamList();
+            updateFacultyList();
+            updateProjectList();
+            updateInterfaceList();
+            updateInterfaceTargets();
+        }
+
+        function toggleVisualization() {
+            const structure = document.getElementById('molecularStructure');
+            if (structure.style.display === 'none') {
+                structure.style.display = 'block';
+                createMolecules();
+                createBonds();
+                simulateEnergyFlow();
+            } else {
+                structure.style.display = 'none';
+            }
+        }
+
+        function forceVisualization() {
+            console.log('Force showing visualization...');
+            
+            // Ensure molecular structure is visible
+            const structure = document.getElementById('molecularStructure');
+            structure.style.display = 'block';
+            structure.style.visibility = 'visible';
+            structure.style.opacity = '1';
+            
+            // Clear and recreate everything
+            structure.innerHTML = '';
+            molecules = [];
+            bonds = [];
+            energyParticles = [];
+            energyLeaks = [];
+            
+            // Recreate molecules and bonds
+            createMolecules();
+            createBonds();
+            simulateEnergyFlow();
+            
+            console.log('Visualization forced to show');
+        }
+    </script>
+</body>
+</html> 
